@@ -27,6 +27,9 @@ class SpellCheck:
             "\n".join(self.dict.keys())
         ))
 
+        # TODO: persist state
+        self.state = {}
+
     def generate_suggestion(self, host) -> str | None:
         host = remove_dots(host)
         suggestions = self.sym_spell.lookup(host, Verbosity.CLOSEST)
@@ -41,6 +44,16 @@ class SpellCheck:
 
         if final_suggestion != host:
             return self.dict[final_suggestion]
+
+    def requestheaders(self, flow: http.HTTPFlow) -> None:
+        if flow.request.host != "mitm.it":
+            return
+
+        if blacklist_domain := flow.request.query.get("blacklist"):
+            self.state[blacklist_domain] = False
+
+        if whitelist_domain := flow.request.query.get("whitelist"):
+            self.state[whitelist_domain] = True
 
     def request(self, flow: http.HTTPFlow) -> None:
         pass
