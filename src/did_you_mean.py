@@ -17,11 +17,16 @@ def remove_dots(string: str) -> str:
 
 
 class SpellCheck:
-    POPULAR_DOMAINS = ["google.com"]
+    POPULAR_DOMAINS = [
+        "google.com", "gmail.com", "youtube.com", "github.com", "stackoverflow.com", "stackexchange.com", "reddit.com",
+        "lobste.rs", "news.ycombinator.com"
+    ]
 
     def __init__(self):
         self.sym_spell = SymSpell()
 
+        # removing the dot separators from domain names because otherwise the spell check library will provide
+        # suggestions like reddit.rs
         self.dict = {
             remove_dots(name): name for name in self.POPULAR_DOMAINS
         }
