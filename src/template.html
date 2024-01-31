@@ -29,10 +29,10 @@
 <body>
 <div>
     <h1 style="color:#FF4733">Did you mean: </h1>
-    <h1 class="a" onclick="fetch('https://mitm.it?blacklist=$original_host');
-        window.location.replace('$corrected_url')"><em>$corrected_host</em></h1>
+    <h1 class="a" onclick="fetch('https://mitm.it?blacklist=$original_host').finally(() => {
+        window.location.replace('$corrected_url')})"><em>$corrected_host</em></h1>
 </div>
-<h1 class="a" onclick="fetch('https://mitm.it?whitelist=$original_host');
-    window.location.replace('$original_url')">No?</h1>
+<h1 class="a" onclick="fetch('https://mitm.it?whitelist=$original_host').finally(() => {
+    window.location.replace('$original_url')})">No?</h1>
 </body>
 </html>
