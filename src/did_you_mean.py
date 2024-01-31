@@ -5,6 +5,8 @@ asking "Did you mean xyz?".
 Example: gamil.com will be replaced with a page asking "Did you mean gmail.com?"
 """
 from io import StringIO
+from pathlib import Path
+from string import Template
 
 from mitmproxy import http
 from symspellpy import SymSpell, Verbosity
@@ -26,6 +28,9 @@ class SpellCheck:
         self.sym_spell.create_dictionary(StringIO(
             "\n".join(self.dict.keys())
         ))
+
+        with open(Path(__file__).parent / "template.html") as file:
+            self.html = Template(file.read())
 
         # TODO: persist state
         self.state = {}
