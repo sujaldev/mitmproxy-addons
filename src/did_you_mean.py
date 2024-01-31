@@ -61,7 +61,29 @@ class SpellCheck:
             self.state[whitelist_domain] = True
 
     def request(self, flow: http.HTTPFlow) -> None:
-        pass
+        whitelisted = self.state.get(flow.request.host)
+
+        if whitelisted:
+            return
+
+        corrected = self.generate_suggestion(flow.request.host)
+        if not corrected:
+            return
+
+        corrected_url = f"{flow.request.scheme}://{corrected}/"
+
+        if (whitelisted is not None) and not whitelisted:
+            flow.response = http.Response.make(301, headers=(
+                (b"Location", corrected_url.encode()),
+            ))
+            return
+
+        flow.response = http.Response.make(200, self.html.substitute(
+            original_url=flow.request.url,
+            original_host=flow.request.host,
+            corrected_host=corrected,
+            corrected_url=corrected_url
+        ))
 
 
 addons = [SpellCheck()]
