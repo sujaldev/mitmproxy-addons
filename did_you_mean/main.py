@@ -61,9 +61,11 @@ class SpellCheck:
 
         if blacklist_domain := flow.request.query.get("blacklist"):
             self.state[blacklist_domain] = False
+            flow.response = http.Response.make(200)
 
         if whitelist_domain := flow.request.query.get("whitelist"):
             self.state[whitelist_domain] = True
+            flow.response = http.Response.make(200)
 
     def request(self, flow: http.HTTPFlow) -> None:
         whitelisted = self.state.get(flow.request.host)
