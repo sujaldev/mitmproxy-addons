@@ -56,18 +56,21 @@ class SpellCheck:
             return self.dict[final_suggestion]
 
     def requestheaders(self, flow: http.HTTPFlow) -> None:
-        if flow.request.host != "mitm.it":
-            return
+        if flow.request.host == "mitm.it":
+            self.process_state_update_request(flow)
+        else:
+            self.process_other_requests(flow)
 
+    def process_state_update_request(self, flow: http.HTTPFlow) -> None:
         if blacklist_domain := flow.request.query.get("blacklist"):
             self.state[blacklist_domain] = False
-            flow.response = http.Response.make(200)
 
         if whitelist_domain := flow.request.query.get("whitelist"):
             self.state[whitelist_domain] = True
-            flow.response = http.Response.make(200)
 
-    def request(self, flow: http.HTTPFlow) -> None:
+        flow.response = http.Response.make(200)
+
+    def process_other_requests(self, flow: http.HTTPFlow) -> None:
         whitelisted = self.state.get(flow.request.host)
 
         if whitelisted:
